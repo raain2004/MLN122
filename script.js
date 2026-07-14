@@ -966,146 +966,250 @@ const QUIZ_QUESTIONS = [
   }
 ];
 
-// Render dynamic quiz content
+// Render dynamic quiz content (one question at a time)
 function renderQuiz() {
   const container = document.getElementById('quiz-container');
   container.innerHTML = '';
 
-  // Reset quiz score display
-  const scoreBox = document.getElementById('quiz-score');
-  scoreBox.classList.add('hidden');
-  scoreBox.innerText = '';
+  if (gameState.currentQuizIndex === undefined) {
+    gameState.currentQuizIndex = 0;
+  }
+  if (!gameState.quizAnswers) {
+    gameState.quizAnswers = [];
+  }
+
+  // Ensure export/print buttons are hidden while quiz is in progress
+  document.getElementById('btn-export-data').classList.add('hidden');
+  document.getElementById('btn-print-data').classList.add('hidden');
+  document.getElementById('quiz-unlock-note').classList.remove('hidden');
+
+  const qIdx = gameState.currentQuizIndex;
   
-  // Reset/Enable Check Button
-  const checkBtn = document.getElementById('btn-check-quiz');
-  checkBtn.disabled = false;
-  checkBtn.innerText = '📝 Nộp bài & Xem giải thích';
+  // If we've completed all questions (index >= 3), show final overview
+  if (qIdx >= QUIZ_QUESTIONS.length) {
+    showQuizResultsSummary();
+    return;
+  }
 
-  QUIZ_QUESTIONS.forEach((q, qIdx) => {
-    const card = document.createElement('div');
-    card.className = 'quiz-question-card';
+  const q = QUIZ_QUESTIONS[qIdx];
 
-    const qTitle = document.createElement('div');
-    qTitle.style.fontWeight = '600';
-    qTitle.style.fontSize = '1.05rem';
-    qTitle.style.color = '#ebdcb2';
-    qTitle.style.marginBottom = '12px';
-    qTitle.innerText = q.question;
-    card.appendChild(qTitle);
+  const card = document.createElement('div');
+  card.className = 'quiz-question-card';
+  card.style.animation = 'fadeIn 0.4s ease-out';
 
-    const optionsList = document.createElement('div');
-    optionsList.className = 'quiz-options-list';
+  // Question indicator (e.g. Câu hỏi 1/3)
+  const qIndicator = document.createElement('div');
+  qIndicator.style.fontSize = '0.8rem';
+  qIndicator.style.color = 'var(--color-border-gold)';
+  qIndicator.style.textTransform = 'uppercase';
+  qIndicator.style.fontWeight = '700';
+  qIndicator.style.marginBottom = '5px';
+  qIndicator.innerText = `Câu hỏi ${qIdx + 1} / ${QUIZ_QUESTIONS.length}`;
+  card.appendChild(qIndicator);
 
-    q.options.forEach((optText, optIdx) => {
-      const label = document.createElement('label');
-      label.className = 'quiz-option-label';
-      label.id = `q-label-${q.id}-${optIdx}`;
+  const qTitle = document.createElement('div');
+  qTitle.style.fontWeight = '600';
+  qTitle.style.fontSize = '1.05rem';
+  qTitle.style.color = '#ebdcb2';
+  qTitle.style.marginBottom = '12px';
+  qTitle.innerText = q.question.replace(/^Câu \d+\.\s*/, ''); // strip prefix if duplicate
+  card.appendChild(qTitle);
 
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = `quiz-q-${q.id}`;
-      radio.value = optIdx;
+  const optionsList = document.createElement('div');
+  optionsList.className = 'quiz-options-list';
+
+  q.options.forEach((optText, optIdx) => {
+    const label = document.createElement('label');
+    label.className = 'quiz-option-label';
+    label.id = `q-label-${q.id}-${optIdx}`;
+
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `quiz-q-${q.id}`;
+    radio.value = optIdx;
+    
+    // If already submitted this round, disable input and style
+    if (gameState.quizSubmitted) {
+      radio.disabled = true;
+      if (optIdx === q.correctIndex) {
+        label.className = 'quiz-option-label correct';
+        radio.checked = (gameState.quizAnswers[qIdx] === optIdx);
+      } else if (optIdx === gameState.quizAnswers[qIdx]) {
+        label.className = 'quiz-option-label incorrect';
+        radio.checked = true;
+      }
+    } else {
+      // Restore previous selection if any
+      if (gameState.quizAnswers[qIdx] === optIdx) {
+        label.classList.add('selected');
+        radio.checked = true;
+      }
       
-      // Update styling on click
       radio.onchange = () => {
-        // Clear selected class from other options in this question
         for (let i = 0; i < q.options.length; i++) {
           document.getElementById(`q-label-${q.id}-${i}`).classList.remove('selected');
         }
         label.classList.add('selected');
+        gameState.quizAnswers[qIdx] = optIdx;
       };
+    }
 
-      const span = document.createElement('span');
-      span.innerText = optText;
+    const span = document.createElement('span');
+    span.innerText = optText;
 
-      label.appendChild(radio);
-      label.appendChild(span);
-      optionsList.appendChild(label);
-    });
-    card.appendChild(optionsList);
-
-    // Explanation Box (hidden initially)
-    const expBox = document.createElement('div');
-    expBox.className = 'quiz-explanation-box hidden';
-    expBox.id = `q-exp-${q.id}`;
-    expBox.innerHTML = `<strong>Giải thích kinh tế học:</strong> ${q.explanation}`;
-    card.appendChild(expBox);
-
-    container.appendChild(card);
+    label.appendChild(radio);
+    label.appendChild(span);
+    optionsList.appendChild(label);
   });
+  card.appendChild(optionsList);
+
+  // Explanation Box
+  const expBox = document.createElement('div');
+  expBox.className = `quiz-explanation-box ${gameState.quizSubmitted ? '' : 'hidden'}`;
+  expBox.id = `q-exp-${q.id}`;
+  expBox.innerHTML = `<strong>Giải thích kinh tế học:</strong> ${q.explanation}`;
+  card.appendChild(expBox);
+
+  container.appendChild(card);
+
+  // Configure action button
+  const checkBtn = document.getElementById('btn-check-quiz');
+  checkBtn.classList.remove('hidden');
+  checkBtn.disabled = false;
+  
+  if (!gameState.quizSubmitted) {
+    checkBtn.innerText = '📝 Xác nhận câu trả lời';
+    checkBtn.onclick = submitActiveAnswer;
+  } else {
+    if (qIdx < QUIZ_QUESTIONS.length - 1) {
+      checkBtn.innerText = 'Câu tiếp theo ➜';
+      checkBtn.onclick = goToNextQuestion;
+    } else {
+      checkBtn.innerText = '📊 Xem kết quả chung ➜';
+      checkBtn.onclick = finishQuiz;
+    }
+  }
 }
 
-// Evaluate MCQ selections
-function checkQuizAnswers() {
-  let score = 0;
-  let allAnswered = true;
-  let userAnswers = [];
+// Submit active quiz question answer
+function submitActiveAnswer() {
+  const qIdx = gameState.currentQuizIndex;
+  const q = QUIZ_QUESTIONS[qIdx];
 
-  QUIZ_QUESTIONS.forEach(q => {
-    const radios = document.getElementsByName(`quiz-q-${q.id}`);
-    let selectedIdx = -1;
-    for (let i = 0; i < radios.length; i++) {
-      if (radios[i].checked) {
-        selectedIdx = i;
-        break;
-      }
+  const radios = document.getElementsByName(`quiz-q-${q.id}`);
+  let selectedIdx = -1;
+  for (let i = 0; i < radios.length; i++) {
+    if (radios[i].checked) {
+      selectedIdx = i;
+      break;
     }
-    if (selectedIdx === -1) {
-      allAnswered = false;
-    }
-    userAnswers.push(selectedIdx);
-  });
+  }
 
-  if (!allAnswered) {
-    alert("Vui lòng trả lời đầy đủ cả 3 câu hỏi trắc nghiệm trước khi nộp bài!");
+  if (selectedIdx === -1) {
+    alert("Vui lòng chọn một phương án trả lời trước khi xác nhận!");
     return;
   }
 
-  // Calculate score and show feedback
-  QUIZ_QUESTIONS.forEach((q, qIdx) => {
-    const selectedIdx = userAnswers[qIdx];
-    const isCorrect = (selectedIdx === q.correctIndex);
-    if (isCorrect) score++;
+  // Save answer and set state
+  gameState.quizAnswers[qIdx] = selectedIdx;
+  gameState.quizSubmitted = true;
 
-    // Highlight options
-    q.options.forEach((optText, optIdx) => {
-      const label = document.getElementById(`q-label-${q.id}-${optIdx}`);
-      const radio = label.querySelector('input');
-      radio.disabled = true; // lock input
+  // Re-render to show feedback (green/red highlights and explanation)
+  renderQuiz();
 
-      if (optIdx === q.correctIndex) {
-        // Mark correct answer in green
-        label.classList.remove('selected');
-        label.classList.add('correct');
-      } else if (optIdx === selectedIdx) {
-        // Mark wrong choice in red
-        label.classList.remove('selected');
-        label.classList.add('incorrect');
-      } else {
-        // Reset others
-        label.classList.remove('selected');
-      }
-    });
+  const isCorrect = (selectedIdx === q.correctIndex);
+  if (isCorrect) {
+    showToast("🎯 Câu trả lời chính xác!");
+  } else {
+    showToast("❌ Rất tiếc, câu trả lời chưa đúng.");
+  }
+}
 
-    // Reveal explanation box
-    document.getElementById(`q-exp-${q.id}`).classList.remove('hidden');
+// Proceed to next quiz question
+function goToNextQuestion() {
+  gameState.currentQuizIndex++;
+  gameState.quizSubmitted = false;
+  renderQuiz();
+}
+
+// Complete the quiz
+function finishQuiz() {
+  gameState.currentQuizIndex++; // triggers the index check in renderQuiz() to show results
+  renderQuiz();
+}
+
+// Show results summary
+function showQuizResultsSummary() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+
+  let score = 0;
+  QUIZ_QUESTIONS.forEach((q, idx) => {
+    if (gameState.quizAnswers[idx] === q.correctIndex) {
+      score++;
+    }
   });
 
-  // Display Score
-  const scoreBox = document.getElementById('quiz-score');
-  scoreBox.innerText = `KẾT QUẢ TRẮC NGHIỆM: ĐÚNG ${score}/${QUIZ_QUESTIONS.length} CÂU (${Math.round((score/QUIZ_QUESTIONS.length)*100)}%)`;
-  scoreBox.classList.remove('hidden');
-  
-  // Disable check button
-  const checkBtn = document.getElementById('btn-check-quiz');
-  checkBtn.disabled = true;
-  checkBtn.innerText = '✓ Đã hoàn thành bài trắc nghiệm';
-  
-  // Record score to gameState
   gameState.quizScore = score;
-  gameState.quizAnswers = userAnswers;
+
+  const summaryCard = document.createElement('div');
+  summaryCard.className = 'quiz-question-card';
+  summaryCard.style.textAlign = 'center';
+  summaryCard.style.animation = 'scaleUp 0.4s ease-out';
+
+  const scoreTitle = document.createElement('div');
+  scoreTitle.style.fontFamily = 'var(--font-title)';
+  scoreTitle.style.fontSize = '1.5rem';
+  scoreTitle.style.fontWeight = '800';
+  scoreTitle.style.color = 'var(--color-border-gold)';
+  scoreTitle.style.marginBottom = '10px';
+  scoreTitle.innerText = `KẾT QUẢ TRẮC NGHIỆM: ĐÚNG ${score}/${QUIZ_QUESTIONS.length} CÂU`;
+  summaryCard.appendChild(scoreTitle);
+
+  const scorePercent = document.createElement('div');
+  scorePercent.style.fontSize = '1rem';
+  scorePercent.style.color = 'var(--color-text-muted)';
+  scorePercent.style.marginBottom = '20px';
+  scorePercent.innerText = `Tỷ lệ hoàn thành đúng: ${Math.round((score / QUIZ_QUESTIONS.length) * 100)}%`;
+  summaryCard.appendChild(scorePercent);
+
+  // Feedback text
+  const feedback = document.createElement('p');
+  feedback.style.fontSize = '0.95rem';
+  feedback.style.lineHeight = '1.6';
+  feedback.style.marginBottom = '20px';
   
-  showToast(`🎯 Bạn đã trả lời đúng ${score}/3 câu trắc nghiệm!`);
+  if (score === 3) {
+    feedback.innerText = "🏆 Tuyệt vời! Bạn đã trả lời đúng tất cả các câu hỏi trắc nghiệm cực khó. Điều này chứng tỏ bạn đã nắm vững sự chuyển dịch lý luận từ cạnh tranh tự do lên độc quyền và chủ nghĩa đế quốc.";
+  } else if (score === 2) {
+    feedback.innerText = "✨ Khá tốt! Bạn đã nắm được hầu hết các khái niệm trọng tâm. Hãy xem lại giải thích các câu trả lời sai để củng cố kỹ kiến thức nhé.";
+  } else {
+    feedback.innerText = "📚 Bạn cần ôn tập thêm. Hãy rê chuột hoặc chạm vào các Node trong sơ đồ cây quyết định ở trên để đọc lại bài học lý thuyết.";
+  }
+  summaryCard.appendChild(feedback);
+
+  // Review button to review questions one by one again
+  const reviewBtn = document.createElement('button');
+  reviewBtn.className = 'btn';
+  reviewBtn.style.padding = '8px 16px';
+  reviewBtn.innerText = '🔍 Xem lại chi tiết từng câu';
+  reviewBtn.onclick = () => {
+    gameState.currentQuizIndex = 0;
+    gameState.quizSubmitted = true;
+    renderQuiz();
+  };
+  summaryCard.appendChild(reviewBtn);
+
+  container.appendChild(summaryCard);
+
+  // Hide progress check button
+  const checkBtn = document.getElementById('btn-check-quiz');
+  checkBtn.classList.add('hidden');
+
+  // Unlock final action buttons
+  document.getElementById('btn-export-data').classList.remove('hidden');
+  document.getElementById('btn-print-data').classList.remove('hidden');
+  document.getElementById('quiz-unlock-note').classList.add('hidden');
 }
 
 // Export learning records to local text/Markdown file
@@ -1136,7 +1240,7 @@ function exportData() {
     report += `\n## ĐÁNH GIÁ TRẮC NGHIỆM CHI TIẾT:\n`;
     QUIZ_QUESTIONS.forEach((q, idx) => {
       const userAnsIdx = gameState.quizAnswers[idx];
-      const userAnsText = userAnsIdx !== -1 ? q.options[userAnsIdx] : "Chưa chọn";
+      const userAnsText = (userAnsIdx !== undefined && userAnsIdx !== -1) ? q.options[userAnsIdx] : "Chưa chọn";
       const correctText = q.options[q.correctIndex];
       const status = userAnsIdx === q.correctIndex ? "ĐÚNG" : "SAI";
       
@@ -1169,7 +1273,9 @@ function replayGame() {
     document.getElementById('screen-welcome').classList.remove('hidden');
     
     // Reset quiz state
+    gameState.currentQuizIndex = 0;
+    gameState.quizSubmitted = false;
+    gameState.quizAnswers = [];
     delete gameState.quizScore;
-    delete gameState.quizAnswers;
   }
 }

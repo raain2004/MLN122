@@ -218,12 +218,15 @@
         <button class="btn" onclick="replayGame()">
           🔄 Chơi lại từ đầu
         </button>
-        <button class="btn btn-secondary" onclick="exportData()">
+        <button class="btn btn-secondary hidden" id="btn-export-data" onclick="exportData()">
           💾 Xuất kết quả học tập
         </button>
-        <button class="btn btn-secondary" onclick="window.print()">
+        <button class="btn btn-secondary hidden" id="btn-print-data" onclick="window.print()">
           🖨️ In trang kết quả
         </button>
+      </div>
+      <div id="quiz-unlock-note" style="text-align: center; font-size: 0.85rem; color: var(--color-text-muted); margin-top: 10px;">
+        ⚠️ Hãy hoàn thành bài trắc nghiệm để mở khóa tính năng xuất kết quả và in báo cáo.
       </div>
     </div>
 
