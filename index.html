@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đế Chế Độc Quyền | Mô Phỏng Tích Tụ & Tập Trung Tư Bản</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>Đế Chế <span>Độc Quyền</span></h1>
+      <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 5px;">
+        Mô phỏng quá trình tích tụ, tập trung tư bản và hình thành tổ chức độc quyền
+      </p>
+    </header>
+
+    <!-- Màn hình chào (Welcome Screen) -->
+    <div id="screen-welcome" class="screen-welcome card-glass">
+      <div class="welcome-intro">
+        <h2 style="font-family: var(--font-title); font-size: 1.6rem; color: var(--color-border-gold);">
+          Chào mừng Nhà Tư Bản tương lai!
+        </h2>
+        <p>
+          Bối cảnh cuối thế kỷ XIX – đầu thế kỷ XX. Cách mạng công nghiệp bùng nổ, sự tích tụ và tập trung tư bản diễn ra mạnh mẽ dẫn đến sự hình thành của các liên minh độc quyền khổng lồ. 
+          Hãy đóng vai trò chủ một doanh nghiệp nhỏ và chèo lái qua các cuộc chiến cạnh tranh để vươn lên nấc thang độc quyền cao nhất.
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 10px 0;">
+        <h3 style="font-family: var(--font-title); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-light);">
+          Chọn ngành công nghiệp của bạn
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+          Lựa chọn ngành sẽ thay đổi bối cảnh và các sự kiện lịch sử tương ứng
+        </p>
+      </div>
+
+      <div class="industry-selection">
+        <!-- Dầu mỏ -->
+        <div class="industry-card" onclick="selectIndustry('petroleum')">
+          <div class="industry-icon">🛢️</div>
+          <div class="industry-name">Dầu mỏ (Petroleum)</div>
+          <div class="industry-desc">Từ những giếng khoan thô sơ đến cuộc chiến giành quyền kiểm soát đường ống vận chuyển và thị trường dầu hỏa chiếu sáng.</div>
+        </div>
+        <!-- Thép -->
+        <div class="industry-card" onclick="selectIndustry('steel')">
+          <div class="industry-icon">🏗️</div>
+          <div class="industry-name">Thép (Steel)</div>
+          <div class="industry-desc">Kỷ nguyên của các lò luyện Bessemer, phục vụ xây dựng đường ray xe lửa và các tòa nhà chọc trời của kỷ nguyên mới.</div>
+        </div>
+        <!-- Đường sắt -->
+        <div class="industry-card" onclick="selectIndustry('railroad')">
+          <div class="industry-icon">🚂</div>
+          <div class="industry-name">Đường sắt (Railroad)</div>
+          <div class="industry-desc">Huyết mạch kết nối toàn bộ nền kinh tế quốc gia, tranh giành quyền khai thác các tuyến đường huyết mạch.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Màn hình chơi game (Gameplay Screen) -->
+    <div id="screen-game" class="screen-game hidden">
+      <!-- Bảng chỉ số (Dashboard) -->
+      <div class="dashboard">
+        <!-- Vốn tích tụ -->
+        <div class="stat-box" id="stat-capital-box">
+          <div class="stat-label">Vốn tích tụ (Capital)</div>
+          <div class="stat-value" id="stat-capital">$1,000k</div>
+          <div class="stat-progress-container">
+            <div id="progress-capital" class="stat-progress-bar" style="width: 50%;"></div>
+          </div>
+        </div>
+        <!-- Mức độ liên kết -->
+        <div class="stat-box" id="stat-integration-box">
+          <div class="stat-label">Mức liên kết</div>
+          <div class="stat-value" id="stat-integration">Cạnh Tranh</div>
+          <div class="stat-progress-container">
+            <div id="progress-integration" class="stat-progress-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+        <!-- Độ bền liên minh -->
+        <div class="stat-box" id="stat-stability-box">
+          <div class="stat-label">Độ bền liên minh</div>
+          <div class="stat-value" id="stat-stability">100%</div>
+          <div class="stat-progress-container">
+            <div id="progress-stability" class="stat-progress-bar success" style="width: 100%;"></div>
+          </div>
+        </div>
+        <!-- Phạm vi ngành -->
+        <div class="stat-box" id="stat-scope-box">
+          <div class="stat-label">Phạm vi liên kết</div>
+          <div class="stat-value" id="stat-scope">Ngang</div>
+          <div class="stat-progress-container">
+            <div id="progress-scope" class="stat-progress-bar" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thẻ tình huống (Scenario Card) -->
+      <div class="card-glass scenario-container">
+        <div class="scenario-header">
+          <div class="scenario-title" id="scenario-title">Tình huống thị trường</div>
+          <div class="round-indicator" id="round-indicator">Vòng 1 / 8</div>
+        </div>
+        <div class="scenario-body" id="scenario-body">
+          Nội dung tình huống đang tải...
+        </div>
+        <div class="options-list" id="options-list">
+          <!-- Options will be generated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Màn hình chuyển bậc (Stage Gate Transition Screen) -->
+    <div id="screen-transition" class="screen-transition card-glass hidden">
+      <div class="gate-animation">
+        <div class="gate-ring"></div>
+        <div class="gate-icon" id="transition-gate-icon">🔒</div>
+      </div>
+      <div class="transition-title" id="transition-gate-title">Hình thành Cartel</div>
+      <p style="color: var(--color-text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
+        Thành tựu phát triển kinh tế mới
+      </p>
+      <div class="transition-def" id="transition-gate-def">
+        Định nghĩa lý thuyết sẽ xuất hiện ở đây...
+      </div>
+      <button class="btn" onclick="confirmTransition()">
+        Tiếp tục hành trình ➜
+      </button>
+    </div>
+
+    <!-- Màn hình kết thúc (End Screen) -->
+    <div id="screen-end" class="screen-end card-glass hidden">
+      <div style="text-align: center;">
+        <h2 style="font-family: var(--font-title); font-size: 2rem; color: var(--color-border-gold); text-transform: uppercase;">
+          Kết quả Độc quyền hóa
+        </h2>
+        <p style="color: var(--color-text-muted); margin-top: 5px;" id="end-status-flavor">
+          Đánh giá vị thế độc quyền của bạn trên thị trường
+        </p>
+      </div>
+
+      <!-- Tóm tắt chỉ số cuối cùng -->
+      <div class="end-stats-summary">
+        <div class="stat-box" style="text-align: center;">
+          <div class="stat-label">Tổng vốn tích lũy</div>
+          <div class="stat-value" id="end-capital" style="font-size: 1.5rem; color: var(--color-border-gold);">$0</div>
+        </div>
+        <div class="stat-box" style="text-align: center;">
+          <div class="stat-label">Cấp độ Độc quyền</div>
+          <div class="stat-value" id="end-integration" style="font-size: 1.5rem; color: var(--color-border-gold);">Cartel</div>
+        </div>
+        <div class="stat-box" style="text-align: center;">
+          <div class="stat-label">Liên kết cuối cùng</div>
+          <div class="stat-value" id="end-scope" style="font-size: 1.5rem; color: var(--color-border-gold);">Ngang</div>
+        </div>
+      </div>
+
+      <!-- Cây Quyết định (Decision Tree) -->
+      <div>
+        <h3 style="font-family: var(--font-title); margin-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 5px;">
+          Sơ đồ Cây Quyết định của bạn
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 15px;">
+          Đường màu <span style="color: var(--color-border-gold); font-weight: bold;">Vàng kim</span> nét liền biểu diễn lựa chọn của bạn. 
+          Đường màu <span style="color: #64748b; font-weight: bold; border-bottom: 1px dashed #64748b;">Trắng bạc nét đứt</span> thể hiện con đường lý thuyết tích tụ tư bản chuẩn từ Cạnh tranh tự do lên Consortium (lý luận Lênin). 
+          <strong>Di chuột hoặc chạm vào các Node</strong> để xem lại tình huống và bài học.
+        </p>
+
+        <div class="tree-container-wrapper" id="tree-container-wrapper">
+          <div class="tree-legend">
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: var(--color-border-gold);"></div>
+              <span>Đường đi của bạn</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="border: 1px dashed var(--color-text-muted);"></div>
+              <span>Đường đi lý thuyết chuẩn (Lênin)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #334155;"></div>
+              <span>Lựa chọn rẽ nhánh khác</span>
+            </div>
+          </div>
+          
+          <!-- Sơ đồ SVG -->
+          <svg id="decision-tree-svg" class="svg-tree" width="900" height="350"></svg>
+          
+          <!-- Tooltip động khi di chuột qua các Node -->
+          <div id="tree-tooltip" class="tree-tooltip"></div>
+        </div>
+      </div>
+
+      <!-- Phần tự phản tư (Self-Reflection Questions) -->
+      <div class="reflection-section">
+        <h3 style="font-family: var(--font-title); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 5px;">
+          Câu hỏi tự phản tư (Ôn tập kiến thức)
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+          Ghi lại câu trả lời để củng cố kiến thức trước khi kết thúc trò chơi.
+        </p>
+        
+        <div class="reflection-question">
+          <label for="q1">1. Tại sao các Cartel liên minh giá cả/sản lượng lại dễ tan vỡ và bị sụp đổ bởi các hành vi cạnh tranh ngầm?</label>
+          <textarea id="q1" placeholder="Nhập câu trả lời của bạn vào đây (ví dụ: Do các thành viên vẫn độc lập về sản xuất và tiêu thụ, họ dễ dàng phá vỡ thỏa thuận để chiếm thị phần khi có cơ hội...)"></textarea>
+        </div>
+
+        <div class="reflection-question">
+          <label for="q2">2. Điểm khác biệt căn bản giữa liên kết ngang (cùng ngành) và liên kết dọc (đa ngành) trong quá trình hình thành Consortium là gì?</label>
+          <textarea id="q2" placeholder="Nhập câu trả lời của bạn vào đây (ví dụ: Liên kết ngang là thỏa hiệp giữa các đối thủ cùng ngành; liên kết dọc là sáp nhập chuỗi cung ứng từ khai thác đến vận tải và thành phẩm...)"></textarea>
+        </div>
+
+        <div class="reflection-question">
+          <label for="q3">3. Sự xuất hiện của tư bản tài chính và tài phiệt ngân hàng đóng vai trò gì trong việc liên kết các Consortium khổng lồ?</label>
+          <textarea id="q3" placeholder="Nhập câu trả lời của bạn vào đây (ví dụ: Ngân hàng cung cấp nguồn vốn khổng lồ, mua cổ phần chi phối, cử người vào ban quản trị, gắn kết các ngành công nghiệp thắt chặt với nhau dưới sự điều phối tài chính...)"></textarea>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="end-actions">
+        <button class="btn" onclick="replayGame()">
+          🔄 Chơi lại từ đầu
+        </button>
+        <button class="btn btn-secondary" onclick="exportData()">
+          💾 Xuất kết quả học tập
+        </button>
+        <button class="btn btn-secondary" onclick="window.print()">
+          🖨️ In trang kết quả
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal giải thích chi tiết lựa chọn -->
+    <div id="explanation-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-icon" id="modal-icon">💡</div>
+          <div class="modal-title" id="modal-title">Phân tích kinh tế học</div>
+        </div>
+        <div class="modal-body">
+          <div id="modal-explanation">
+            Nội dung giải thích lựa chọn...
+          </div>
+          <div class="feedback-delta" id="modal-delta">
+            Vốn tích tụ thay đổi: +0
+          </div>
+          <div class="feedback-theory" id="modal-theory">
+            Trích lý thuyết giáo trình...
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeExplanationModal()">
+            Tiếp tục ➜
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast alert nhỏ -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
