@@ -375,6 +375,17 @@ header h1 span {
   color: var(--color-bg-deep);
 }
 
+.option-card.selected {
+  background: rgba(235, 220, 178, 0.15) !important;
+  border-color: var(--color-border-gold) !important;
+  box-shadow: 0 0 10px rgba(235, 220, 178, 0.2);
+}
+
+.option-card.selected .option-badge {
+  background: var(--color-border-gold) !important;
+  color: var(--color-bg-deep) !important;
+}
+
 .option-text {
   font-size: 0.95rem;
   font-weight: 500;

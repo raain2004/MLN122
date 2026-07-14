@@ -459,10 +459,17 @@ function loadNextRound() {
   const optionsList = document.getElementById('options-list');
   optionsList.innerHTML = '';
 
+  // Reset the confirm selection button for this new round
+  const confirmBtn = document.getElementById('btn-confirm-round-choice');
+  confirmBtn.disabled = true;
+  confirmBtn.classList.add('disabled');
+  confirmBtn.innerText = '🔒 Chọn một phương án';
+  gameState.selectedRoundOption = null;
+
   scenario.options.forEach(opt => {
     const card = document.createElement('div');
     card.className = 'option-card';
-    card.onclick = () => selectOption(opt);
+    card.onclick = () => highlightRoundOption(card, opt);
 
     const badge = document.createElement('div');
     badge.className = 'option-badge';
@@ -476,6 +483,31 @@ function loadNextRound() {
     card.appendChild(text);
     optionsList.appendChild(card);
   });
+}
+
+// Highlight the selected option in the 8 game rounds
+function highlightRoundOption(cardElement, opt) {
+  // Clear selected class from other options
+  const cards = document.querySelectorAll('#options-list .option-card');
+  cards.forEach(c => c.classList.remove('selected'));
+
+  // Highlight this card
+  cardElement.classList.add('selected');
+
+  // Store active selection in gameState
+  gameState.selectedRoundOption = opt;
+
+  // Enable the confirm button
+  const confirmBtn = document.getElementById('btn-confirm-round-choice');
+  confirmBtn.disabled = false;
+  confirmBtn.classList.remove('disabled');
+  confirmBtn.innerText = `🎯 Xác nhận lựa chọn ${opt.id}`;
+}
+
+// Confirm and trigger selection execution
+function confirmRoundSelection() {
+  if (!gameState.selectedRoundOption) return;
+  selectOption(gameState.selectedRoundOption);
 }
 
 // Option chosen handler
