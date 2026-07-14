@@ -192,28 +192,24 @@
         </div>
       </div>
 
-      <!-- Phần tự phản tư (Self-Reflection Questions) -->
+      <!-- Phần trắc nghiệm tự phản tư (Self-Reflection Multiple Choice Quiz) -->
       <div class="reflection-section">
-        <h3 style="font-family: var(--font-title); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 5px;">
-          Câu hỏi tự phản tư (Ôn tập kiến thức)
+        <h3 style="font-family: var(--font-title); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 5px; color: var(--color-border-gold);">
+          Trắc nghiệm ôn tập kiến thức (Cực kỳ khó)
         </h3>
-        <p style="font-size: 0.85rem; color: var(--color-text-muted);">
-          Ghi lại câu trả lời để củng cố kiến thức trước khi kết thúc trò chơi.
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 15px;">
+          Hãy hoàn thành 3 câu hỏi trắc nghiệm dưới đây để đánh giá khả năng hiểu sâu lý thuyết độc quyền của bạn.
         </p>
         
-        <div class="reflection-question">
-          <label for="q1">1. Tại sao các Cartel liên minh giá cả/sản lượng lại dễ tan vỡ và bị sụp đổ bởi các hành vi cạnh tranh ngầm?</label>
-          <textarea id="q1" placeholder="Nhập câu trả lời của bạn vào đây (ví dụ: Do các thành viên vẫn độc lập về sản xuất và tiêu thụ, họ dễ dàng phá vỡ thỏa thuận để chiếm thị phần khi có cơ hội...)"></textarea>
+        <div id="quiz-container">
+          <!-- Các câu hỏi trắc nghiệm sẽ được tự động tải lên từ script.js -->
         </div>
 
-        <div class="reflection-question">
-          <label for="q2">2. Điểm khác biệt căn bản giữa liên kết ngang (cùng ngành) và liên kết dọc (đa ngành) trong quá trình hình thành Consortium là gì?</label>
-          <textarea id="q2" placeholder="Nhập câu trả lời của bạn vào đây (ví dụ: Liên kết ngang là thỏa hiệp giữa các đối thủ cùng ngành; liên kết dọc là sáp nhập chuỗi cung ứng từ khai thác đến vận tải và thành phẩm...)"></textarea>
-        </div>
-
-        <div class="reflection-question">
-          <label for="q3">3. Sự xuất hiện của tư bản tài chính và tài phiệt ngân hàng đóng vai trò gì trong việc liên kết các Consortium khổng lồ?</label>
-          <textarea id="q3" placeholder="Nhập câu trả lời của bạn vào đây (ví dụ: Ngân hàng cung cấp nguồn vốn khổng lồ, mua cổ phần chi phối, cử người vào ban quản trị, gắn kết các ngành công nghiệp thắt chặt với nhau dưới sự điều phối tài chính...)"></textarea>
+        <div style="text-align: center; margin-top: 15px;">
+          <button class="btn" id="btn-check-quiz" onclick="checkQuizAnswers()">
+            📝 Nộp bài & Xem giải thích
+          </button>
+          <div id="quiz-score" style="margin-top: 15px; font-family: var(--font-title); font-size: 1.2rem; font-weight: 700; color: var(--color-border-gold);" class="hidden"></div>
         </div>
       </div>
 

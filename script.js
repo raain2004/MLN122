@@ -693,6 +693,9 @@ function endGame() {
 
   // Draw the SVG Decision Tree
   drawDecisionTree();
+
+  // Render the educational quiz
+  renderQuiz();
 }
 
 // Draw decision tree using SVG
@@ -923,17 +926,201 @@ function showTreeTooltipModal(e) {
   modal.classList.remove('hidden');
 }
 
+// QUIZ DATA
+const QUIZ_QUESTIONS = [
+  {
+    id: 1,
+    question: "Câu 1. Điểm khác biệt kinh tế - pháp lý cốt lõi phân định ranh giới giữa một tổ chức độc quyền dạng Syndicate và Trust là gì?",
+    options: [
+      "Syndicate thống nhất cả sản xuất và tiêu thụ dưới một hội đồng quản trị chung, trong khi Trust cho phép thành viên độc lập về sản xuất.",
+      "Trong Syndicate, các xí nghiệp thành viên độc lập về sản xuất nhưng mất tính độc lập về lưu thông; còn trong Trust, các thành viên mất cả tính độc lập về sản xuất lẫn lưu thông và quy về một ban quản trị ủy thác tối cao.",
+      "Syndicate là liên kết dọc giữa các ngành khác nhau, còn Trust là liên kết ngang giữa các doanh nghiệp cùng ngành.",
+      "Syndicate chịu sự chi phối hoàn toàn của tư bản tài chính ngân hàng, còn Trust hoạt động độc lập chỉ bằng nguồn vốn công nghiệp tự tích lũy."
+    ],
+    correctIndex: 1,
+    explanation: "Syndicate thống nhất khâu lưu thông (mua nguyên liệu và bán sản phẩm thông qua một văn phòng đại diện chung) nhưng sản xuất vẫn độc lập. Còn Trust tiến lên một bậc cao hơn: sáp nhập toàn diện cả sản xuất lẫn lưu thông dưới một ban quản lý tối cao (Board of Trustees), các xí nghiệp thành viên cũ mất hết tính độc lập và chủ doanh nghiệp trở thành cổ đông nhận cổ tức."
+  },
+  {
+    id: 2,
+    question: "Câu 2. Tại sao sự chuyển dịch từ liên kết ngang (cùng ngành) sang liên kết dọc (đa ngành) lại là điều kiện tất yếu để hình thành Consortium, và vai trò của tư bản tài chính là gì?",
+    options: [
+      "Liên kết ngang dễ bị chính phủ xử phạt hành chính nên doanh nghiệp chuyển sang liên kết dọc để phân tán rủi ro pháp lý.",
+      "Liên kết dọc giúp tăng giá bán thành phẩm lên nhiều lần, còn tư bản tài chính chỉ đóng vai trò trung gian thu thuế hộ nhà nước.",
+      "Liên kết ngang chỉ giải quyết cạnh tranh nội bộ một ngành; liên kết dọc thâu tóm chuỗi cung ứng đa ngành từ nguyên liệu thô đến thành phẩm. Quy mô khổng lồ này đòi hỏi sự thâm nhập của tư bản ngân hàng để tài trợ vốn và kiểm soát tài chính, hình thành Consortium dưới tay các tài phiệt.",
+      "Consortium thực chất là một Cartel quốc tế liên kết dọc để thống nhất giá cả nguyên liệu thô trên phạm vi toàn cầu mà không cần sáp nhập sản xuất."
+    ],
+    correctIndex: 2,
+    explanation: "Consortium là tổ chức độc quyền đa ngành khổng lồ, liên kết dọc chuỗi giá trị từ nguyên liệu thô đến thành phẩm. Quy mô khổng lồ này vượt quá khả năng tự tích lũy của tư bản công nghiệp, bắt buộc phải có sự dung hợp sâu sắc với tư bản ngân hàng (tạo thành tư bản tài chính) nhằm cấp vốn và mua cổ phần khống chế, tạo thành đế chế tài phiệt Consortium."
+  },
+  {
+    id: 3,
+    question: "Câu 3. Dưới góc nhìn kinh tế chính trị Mác - Lênin, bản chất kinh tế của hiện tượng 'tư bản thừa' dẫn đến hành vi xuất khẩu tư bản của các Consortium độc quyền là gì?",
+    options: [
+      "Do sản xuất trong nước đã bão hòa và các Consortium muốn viện trợ nhân đạo phát triển cho các nước chậm phát triển.",
+      "Không phải là tư bản không thể đầu tư trong nước, mà là do đầu tư tiếp trong nước sẽ làm giảm tỷ suất lợi nhuận do tích tụ tư bản quá cao. Xuất khẩu tư bản ra nước ngoài nhằm tìm kiếm tỷ suất lợi nhuận siêu ngạch ở những nơi có giá nhân công rẻ, đất đai rẻ và nguyên liệu rẻ.",
+      "Là hiện tượng các ngân hàng thương mại thừa tiền mặt do người dân gửi tiết kiệm quá nhiều nên phải đem cho các nước chậm phát triển vay dài hạn với lãi suất 0%.",
+      "Do chính phủ nước sở tại áp đặt các Consortium phải mang vốn ra nước ngoài để giảm thiểu ô nhiễm môi trường trong nước."
+    ],
+    correctIndex: 1,
+    explanation: "Bản chất kinh tế của 'tư bản thừa' không phải là không thể đầu tư trong nước, mà là do tích tụ tư bản quá cao làm giảm sút tỷ suất lợi nhuận nội địa. Các tổ chức độc quyền buộc phải xuất khẩu tư bản ra nước ngoài - nơi có giá nhân công rất rẻ, đất đai rẻ, nguyên liệu thô dồi dào - để thu về tỷ suất lợi nhuận siêu ngạch."
+  }
+];
+
+// Render dynamic quiz content
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+
+  // Reset quiz score display
+  const scoreBox = document.getElementById('quiz-score');
+  scoreBox.classList.add('hidden');
+  scoreBox.innerText = '';
+  
+  // Reset/Enable Check Button
+  const checkBtn = document.getElementById('btn-check-quiz');
+  checkBtn.disabled = false;
+  checkBtn.innerText = '📝 Nộp bài & Xem giải thích';
+
+  QUIZ_QUESTIONS.forEach((q, qIdx) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-question-card';
+
+    const qTitle = document.createElement('div');
+    qTitle.style.fontWeight = '600';
+    qTitle.style.fontSize = '1.05rem';
+    qTitle.style.color = '#ebdcb2';
+    qTitle.style.marginBottom = '12px';
+    qTitle.innerText = q.question;
+    card.appendChild(qTitle);
+
+    const optionsList = document.createElement('div');
+    optionsList.className = 'quiz-options-list';
+
+    q.options.forEach((optText, optIdx) => {
+      const label = document.createElement('label');
+      label.className = 'quiz-option-label';
+      label.id = `q-label-${q.id}-${optIdx}`;
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `quiz-q-${q.id}`;
+      radio.value = optIdx;
+      
+      // Update styling on click
+      radio.onchange = () => {
+        // Clear selected class from other options in this question
+        for (let i = 0; i < q.options.length; i++) {
+          document.getElementById(`q-label-${q.id}-${i}`).classList.remove('selected');
+        }
+        label.classList.add('selected');
+      };
+
+      const span = document.createElement('span');
+      span.innerText = optText;
+
+      label.appendChild(radio);
+      label.appendChild(span);
+      optionsList.appendChild(label);
+    });
+    card.appendChild(optionsList);
+
+    // Explanation Box (hidden initially)
+    const expBox = document.createElement('div');
+    expBox.className = 'quiz-explanation-box hidden';
+    expBox.id = `q-exp-${q.id}`;
+    expBox.innerHTML = `<strong>Giải thích kinh tế học:</strong> ${q.explanation}`;
+    card.appendChild(expBox);
+
+    container.appendChild(card);
+  });
+}
+
+// Evaluate MCQ selections
+function checkQuizAnswers() {
+  let score = 0;
+  let allAnswered = true;
+  let userAnswers = [];
+
+  QUIZ_QUESTIONS.forEach(q => {
+    const radios = document.getElementsByName(`quiz-q-${q.id}`);
+    let selectedIdx = -1;
+    for (let i = 0; i < radios.length; i++) {
+      if (radios[i].checked) {
+        selectedIdx = i;
+        break;
+      }
+    }
+    if (selectedIdx === -1) {
+      allAnswered = false;
+    }
+    userAnswers.push(selectedIdx);
+  });
+
+  if (!allAnswered) {
+    alert("Vui lòng trả lời đầy đủ cả 3 câu hỏi trắc nghiệm trước khi nộp bài!");
+    return;
+  }
+
+  // Calculate score and show feedback
+  QUIZ_QUESTIONS.forEach((q, qIdx) => {
+    const selectedIdx = userAnswers[qIdx];
+    const isCorrect = (selectedIdx === q.correctIndex);
+    if (isCorrect) score++;
+
+    // Highlight options
+    q.options.forEach((optText, optIdx) => {
+      const label = document.getElementById(`q-label-${q.id}-${optIdx}`);
+      const radio = label.querySelector('input');
+      radio.disabled = true; // lock input
+
+      if (optIdx === q.correctIndex) {
+        // Mark correct answer in green
+        label.classList.remove('selected');
+        label.classList.add('correct');
+      } else if (optIdx === selectedIdx) {
+        // Mark wrong choice in red
+        label.classList.remove('selected');
+        label.classList.add('incorrect');
+      } else {
+        // Reset others
+        label.classList.remove('selected');
+      }
+    });
+
+    // Reveal explanation box
+    document.getElementById(`q-exp-${q.id}`).classList.remove('hidden');
+  });
+
+  // Display Score
+  const scoreBox = document.getElementById('quiz-score');
+  scoreBox.innerText = `KẾT QUẢ TRẮC NGHIỆM: ĐÚNG ${score}/${QUIZ_QUESTIONS.length} CÂU (${Math.round((score/QUIZ_QUESTIONS.length)*100)}%)`;
+  scoreBox.classList.remove('hidden');
+  
+  // Disable check button
+  const checkBtn = document.getElementById('btn-check-quiz');
+  checkBtn.disabled = true;
+  checkBtn.innerText = '✓ Đã hoàn thành bài trắc nghiệm';
+  
+  // Record score to gameState
+  gameState.quizScore = score;
+  gameState.quizAnswers = userAnswers;
+  
+  showToast(`🎯 Bạn đã trả lời đúng ${score}/3 câu trắc nghiệm!`);
+}
+
 // Export learning records to local text/Markdown file
 function exportData() {
-  const q1 = document.getElementById('q1').value || "Chưa trả lời";
-  const q2 = document.getElementById('q2').value || "Chưa trả lời";
-  const q3 = document.getElementById('q3').value || "Chưa trả lời";
+  let scoreText = "Chưa làm bài trắc nghiệm";
+  if (gameState.quizScore !== undefined) {
+    scoreText = `Đúng ${gameState.quizScore}/3 câu`;
+  }
 
   let report = `# BÁO CÁO HỌC TẬP: ĐẾ CHẾ ĐỘC QUYỀN\n`;
   report += `Ngành công nghiệp mô phỏng: ${gameState.industry.toUpperCase()}\n`;
   report += `Vị thế độc quyền cuối cùng: ${INTEGRATION_LABELS[gameState.integrationLevel]}\n`;
   report += `Quy mô liên kết: ${gameState.scope}\n`;
   report += `Vốn tích tụ cuối cùng: $${gameState.capital.toLocaleString()}k\n`;
+  report += `Kết quả trắc nghiệm ôn tập: ${scoreText}\n`;
   report += `=========================================\n\n`;
   
   report += `## LỊCH SỬ QUYẾT ĐỊNH (ROUND-BY-ROUND):\n`;
@@ -945,13 +1132,21 @@ function exportData() {
     report += `-----------------------------------------\n`;
   });
 
-  report += `\n## CÂU HỎI PHẢN TƯ VÀ BÀI HỌC:\n`;
-  report += `1. Tại sao các Cartel liên minh giá cả/sản lượng lại dễ tan vỡ và bị sụp đổ bởi các hành vi cạnh tranh ngầm?\n`;
-  report += `   Trả lời: ${q1}\n\n`;
-  report += `2. Điểm khác biệt căn bản giữa liên kết ngang (cùng ngành) và liên kết dọc (đa ngành) trong quá trình hình thành Consortium là gì?\n`;
-  report += `   Trả lời: ${q2}\n\n`;
-  report += `3. Sự xuất hiện của tư bản tài chính và tài phiệt ngân hàng đóng vai trò gì trong việc liên kết các Consortium khổng lồ?\n`;
-  report += `   Trả lời: ${q3}\n`;
+  if (gameState.quizAnswers) {
+    report += `\n## ĐÁNH GIÁ TRẮC NGHIỆM CHI TIẾT:\n`;
+    QUIZ_QUESTIONS.forEach((q, idx) => {
+      const userAnsIdx = gameState.quizAnswers[idx];
+      const userAnsText = userAnsIdx !== -1 ? q.options[userAnsIdx] : "Chưa chọn";
+      const correctText = q.options[q.correctIndex];
+      const status = userAnsIdx === q.correctIndex ? "ĐÚNG" : "SAI";
+      
+      report += `${q.question}\n`;
+      report += `- Câu trả lời của bạn: "${userAnsText}" -> [${status}]\n`;
+      report += `- Đáp án chuẩn: "${correctText}"\n`;
+      report += `- Giải thích lý thuyết: ${q.explanation}\n`;
+      report += `-----------------------------------------\n`;
+    });
+  }
 
   // Create file download link
   const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
@@ -973,9 +1168,8 @@ function replayGame() {
     document.getElementById('screen-end').classList.add('hidden');
     document.getElementById('screen-welcome').classList.remove('hidden');
     
-    // Clear answers
-    document.getElementById('q1').value = '';
-    document.getElementById('q2').value = '';
-    document.getElementById('q3').value = '';
+    // Reset quiz state
+    delete gameState.quizScore;
+    delete gameState.quizAnswers;
   }
 }
