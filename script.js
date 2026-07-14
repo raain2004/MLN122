@@ -694,6 +694,12 @@ function endGame() {
   // Draw the SVG Decision Tree
   drawDecisionTree();
 
+  // Initialize quiz for this session by picking 10 random questions
+  gameState.activeQuizQuestions = getRandomQuizQuestions();
+  gameState.currentQuizIndex = 0;
+  gameState.quizAnswers = [];
+  gameState.quizSubmitted = false;
+
   // Render the educational quiz
   renderQuiz();
 }
@@ -930,41 +936,369 @@ function showTreeTooltipModal(e) {
 const QUIZ_QUESTIONS = [
   {
     id: 1,
-    question: "Câu 1. Điểm khác biệt kinh tế - pháp lý cốt lõi phân định ranh giới giữa một tổ chức độc quyền dạng Syndicate và Trust là gì?",
+    question: "Câu 1. Cạnh tranh trong chủ nghĩa tư bản dẫn đến:",
     options: [
-      "Syndicate thống nhất cả sản xuất và tiêu thụ dưới một hội đồng quản trị chung, trong khi Trust cho phép thành viên độc lập về sản xuất.",
-      "Trong Syndicate, các xí nghiệp thành viên độc lập về sản xuất nhưng mất tính độc lập về lưu thông; còn trong Trust, các thành viên mất cả tính độc lập về sản xuất lẫn lưu thông và quy về một ban quản trị ủy thác tối cao.",
-      "Syndicate là liên kết dọc giữa các ngành khác nhau, còn Trust là liên kết ngang giữa các doanh nghiệp cùng ngành.",
-      "Syndicate chịu sự chi phối hoàn toàn của tư bản tài chính ngân hàng, còn Trust hoạt động độc lập chỉ bằng nguồn vốn công nghiệp tự tích lũy."
+      "A. Tích lũy tư bản",
+      "B. Tích tụ tư bản",
+      "C. Độc quyền"
     ],
-    correctIndex: 1,
-    explanation: "Syndicate thống nhất khâu lưu thông (mua nguyên liệu và bán sản phẩm thông qua một văn phòng đại diện chung) nhưng sản xuất vẫn độc lập. Còn Trust tiến lên một bậc cao hơn: sáp nhập toàn diện cả sản xuất lẫn lưu thông dưới một ban quản lý tối cao (Board of Trustees), các xí nghiệp thành viên cũ mất hết tính độc lập và chủ doanh nghiệp trở thành cổ đông nhận cổ tức."
+    correctIndex: 2,
+    explanation: "Theo V.I. Lênin, cạnh tranh tự do thúc đẩy tích tụ và tập trung sản xuất, khi sự tích tụ này đạt đến một mức độ nhất định sẽ tất yếu dẫn đến độc quyền."
   },
   {
     id: 2,
-    question: "Câu 2. Tại sao sự chuyển dịch từ liên kết ngang (cùng ngành) sang liên kết dọc (đa ngành) lại là điều kiện tất yếu để hình thành Consortium, và vai trò của tư bản tài chính là gì?",
+    question: "Câu 2. Đâu là một trong những nguyên nhân dẫn đến độc quyền?",
     options: [
-      "Liên kết ngang dễ bị chính phủ xử phạt hành chính nên doanh nghiệp chuyển sang liên kết dọc để phân tán rủi ro pháp lý.",
-      "Liên kết dọc giúp tăng giá bán thành phẩm lên nhiều lần, còn tư bản tài chính chỉ đóng vai trò trung gian thu thuế hộ nhà nước.",
-      "Liên kết ngang chỉ giải quyết cạnh tranh nội bộ một ngành; liên kết dọc thâu tóm chuỗi cung ứng đa ngành từ nguyên liệu thô đến thành phẩm. Quy mô khổng lồ này đòi hỏi sự thâm nhập của tư bản ngân hàng để tài trợ vốn và kiểm soát tài chính, hình thành Consortium dưới tay các tài phiệt.",
-      "Consortium thực chất là một Cartel quốc tế liên kết dọc để thống nhất giá cả nguyên liệu thô trên phạm vi toàn cầu mà không cần sáp nhập sản xuất."
+      "A. Do cạnh tranh",
+      "B. Do việc bóc lột sức lao động",
+      "C. Do sự vận dụng từ các học thuyết kinh tế vào kinh doanh",
+      "D. Do sự ra đời của nhà nước"
     ],
-    correctIndex: 2,
-    explanation: "Consortium là tổ chức độc quyền đa ngành khổng lồ, liên kết dọc chuỗi giá trị từ nguyên liệu thô đến thành phẩm. Quy mô khổng lồ này vượt quá khả năng tự tích lũy của tư bản công nghiệp, bắt buộc phải có sự dung hợp sâu sắc với tư bản ngân hàng (tạo thành tư bản tài chính) nhằm cấp vốn và mua cổ phần khống chế, tạo thành đế chế tài phiệt Consortium."
+    correctIndex: 0,
+    explanation: "Cạnh tranh tàn khốc buộc các xí nghiệp lớn phải thỏa hiệp, liên minh với nhau để tránh sự tự hủy diệt, từ đó hình thành các tổ chức độc quyền."
   },
   {
     id: 3,
-    question: "Câu 3. Dưới góc nhìn kinh tế chính trị Mác - Lênin, bản chất kinh tế của hiện tượng 'tư bản thừa' dẫn đến hành vi xuất khẩu tư bản của các Consortium độc quyền là gì?",
+    question: "Câu 3. Sự hình thành độc quyền dựa trên các nguyên nhân nào sau đây?",
     options: [
-      "Do sản xuất trong nước đã bão hòa và các Consortium muốn viện trợ nhân đạo phát triển cho các nước chậm phát triển.",
-      "Không phải là tư bản không thể đầu tư trong nước, mà là do đầu tư tiếp trong nước sẽ làm giảm tỷ suất lợi nhuận do tích tụ tư bản quá cao. Xuất khẩu tư bản ra nước ngoài nhằm tìm kiếm tỷ suất lợi nhuận siêu ngạch ở những nơi có giá nhân công rẻ, đất đai rẻ và nguyên liệu rẻ.",
-      "Là hiện tượng các ngân hàng thương mại thừa tiền mặt do người dân gửi tiết kiệm quá nhiều nên phải đem cho các nước chậm phát triển vay dài hạn với lãi suất 0%.",
-      "Do chính phủ nước sở tại áp đặt các Consortium phải mang vốn ra nước ngoài để giảm thiểu ô nhiễm môi trường trong nước."
+      "A. Sự phát triển của lực lượng sản xuất thúc đẩy các tổ chức độc quyền; cạnh tranh; khủng hoảng; sự phát triển của hệ thống tín dụng",
+      "B. Sự phát triển của quan hệ sản xuất thúc đẩy các tổ chức độc quyền; cạnh tranh; khủng hoảng; sự phát triển của hệ thống tín dụng",
+      "C. Sự phát triển của phương thức sản xuất tư bản chủ nghĩa thúc đẩy các tổ chức độc quyền; cạnh tranh; khủng hoảng sự phát triển của hệ thống tín dụng",
+      "D. Sự phát triển của lực lượng sản xuất thúc đẩy các tổ chức độc quyền; cạnh tranh; khủng hoảng trong sự phát triển của một quốc gia"
+    ],
+    correctIndex: 0,
+    explanation: "4 nguyên nhân cốt lõi hình thành độc quyền là: Sự phát triển lực lượng sản xuất quy mô lớn; Cạnh tranh khốc liệt giữa các xí nghiệp lớn; Khủng hoảng kinh tế đào thải kẻ yếu; Sự phát triển của hệ thống tín dụng và ngân hàng hỗ trợ tập trung tư bản."
+  },
+  {
+    id: 4,
+    question: "Câu 4. Sự hình thành các tổ chức độc quyền dựa trên cơ sở nào?",
+    options: [
+      "A. Tích tụ tập trung sản xuất và sự ra đời của các xí nghiệp quy mô lớn",
+      "B. Sự xuất hiện các thành tựu mới của khoa học",
+      "C. Sản xuất nhỏ phân tán",
+      "D. Nhiều doanh nghiệp vừa và nhỏ ra đời"
+    ],
+    correctIndex: 0,
+    explanation: "Độc quyền hình thành trực tiếp dựa trên trình độ tích tụ và tập trung sản xuất cao độ dẫn đến sự thống trị của các xí nghiệp quy mô khổng lồ."
+  },
+  {
+    id: 5,
+    question: "Câu 5. Các tổ chức độc quyền hình thành trên cơ sở:",
+    options: [
+      "A. Liên kết dọc và liên kết ngang",
+      "B. Liên kết tự giác và liên kết tự phát",
+      "C. Liên kết bên ngoài và liên kết bên trong"
+    ],
+    correctIndex: 0,
+    explanation: "Các tổ chức độc quyền tích lũy quy mô bằng cả hai hình thức: liên kết ngang (cùng một ngành sản xuất) và liên kết dọc (đa ngành dọc theo chuỗi cung ứng nguyên liệu đến thành phẩm)."
+  },
+  {
+    id: 6,
+    question: "Câu 6. Liên kết các doanh nghiệp theo cùng một ngành là theo hình thức:",
+    options: [
+      "A. Liên kết dọc",
+      "B. Liên kết ngang",
+      "C. Cả liên kết dọc và liên kết ngang",
+      "D. Một liên kết khác"
     ],
     correctIndex: 1,
-    explanation: "Bản chất kinh tế của 'tư bản thừa' không phải là không thể đầu tư trong nước, mà là do tích tụ tư bản quá cao làm giảm sút tỷ suất lợi nhuận nội địa. Các tổ chức độc quyền buộc phải xuất khẩu tư bản ra nước ngoài - nơi có giá nhân công rất rẻ, đất đai rẻ, nguyên liệu thô dồi dào - để thu về tỷ suất lợi nhuận siêu ngạch."
+    explanation: "Liên kết các doanh nghiệp có cùng quy trình sản xuất và sản phẩm trong cùng một ngành được gọi là liên kết ngang."
+  },
+  {
+    id: 7,
+    question: "Câu 7. Về mặt lịch sử, các hình thức tổ chức độc quyền cơ bản từ thấp đến cao đó là:",
+    options: [
+      "A. Cartel – Syndicate – Trust – Consortium",
+      "B. Cartel – Trust – Syndicate – Consortium",
+      "C. Trust – Cartel – Syndicate – Consortium",
+      "D. Trust – Syndicate – Cartel – Consortium"
+    ],
+    correctIndex: 0,
+    explanation: "Các hình thức tổ chức độc quyền cơ bản phát triển từ thấp đến cao theo trình tự thời gian và độ chặt chẽ là: Cartel (Sơ khai) -> Syndicate -> Trust -> Consortium (Hình thức cao nhất)."
+  },
+  {
+    id: 8,
+    question: "Câu 8. Nhận định nào sau đây là sai?",
+    options: [
+      "A. Consortium là hình thức độc quyền theo liên kết dọc",
+      "B. Các tổ chức độc quyền mở rộng ra nhiều ngành khác nhau là phát triển theo liên kết dọc",
+      "C. Các nhà tư bản tham gia Cartel vẫn độc lập về sản xuất nhưng mất độc lập về lưu thông",
+      "D. Trust là tổ chức độc quyền cao hơn Syndicate"
+    ],
+    correctIndex: 2,
+    explanation: "Nhận định C là sai vì các thành viên tham gia Cartel vẫn độc lập hoàn toàn cả về sản xuất lẫn lưu thông thương mại. Syndicate mới là hình thức mất độc lập về khâu lưu thông."
+  },
+  {
+    id: 9,
+    question: "Câu 9. Hình thức độc quyền nào thấp nhất trong các hình thức sau?",
+    options: [
+      "A. Cartel",
+      "B. Syndicate",
+      "C. Trust",
+      "D. Consortium"
+    ],
+    correctIndex: 0,
+    explanation: "Cartel là hình thức độc quyền thấp nhất và lỏng lẻo nhất, các xí nghiệp chỉ thỏa ước về giá và sản lượng nhưng hoàn toàn độc lập về mọi mặt."
+  },
+  {
+    id: 10,
+    question: "Câu 10. Hình thức độc quyền nào cao nhất trong các hình thức sau?",
+    options: [
+      "A. Cartel",
+      "B. Syndicate",
+      "C. Trust",
+      "D. Consortium"
+    ],
+    correctIndex: 3,
+    explanation: "Consortium là hình thức độc quyền cao nhất, đa ngành, quy mô khổng lồ và có sự tham gia thắt chặt của các siêu tổ chức tài chính ngân hàng."
+  },
+  {
+    id: 11,
+    question: "Câu 11. Khi các xí nghiệp tham gia chỉ mất độc quyền về lưu thông (vẫn độc lập sản xuất) là hình thức độc quyền nào?",
+    options: [
+      "A. Cartel",
+      "B. Syndicate",
+      "C. Trust",
+      "D. Consortium"
+    ],
+    correctIndex: 1,
+    explanation: "Đặc trưng cốt lõi của Syndicate là các doanh nghiệp thành viên mất tính độc lập thương mại lưu thông (mua bán chung), nhưng vẫn giữ nguyên tính độc lập về sản xuất."
+  },
+  {
+    id: 12,
+    question: "Câu 12. Hình thức độc quyền nào thống nhất việc sản xuất, tiêu thụ, tài vụ đều do một ban quản trị quản lý?",
+    options: [
+      "A. Consortium",
+      "B. Syndicate",
+      "C. Cartel",
+      "D. Trust"
+    ],
+    correctIndex: 3,
+    explanation: "Trong Trust, các xí nghiệp thành viên mất hoàn toàn tính độc lập sản xuất lẫn lưu thông. Ban quản lý ủy thác chung điều phối mọi hoạt động, chủ xí nghiệp cũ chỉ nhận cổ tức theo cổ phiếu."
+  },
+  {
+    id: 13,
+    question: 'Câu 13. "Tư bản tài chính là kết quả của sự hợp nhất giữa tư bản ngân hàng của một số ít ngân hàng độc quyền lớn nhất, với tư bản của những liên minh độc quyền các nhà công nghiệp." Câu nói trên của ai?',
+    options: [
+      "A. C. Mác",
+      "B. Ph. Ăngghen",
+      "C. V.I. Lênin",
+      "D. Hồ Chí Minh"
+    ],
+    correctIndex: 2,
+    explanation: "Đây là định nghĩa kinh điển của V.I. Lênin về bản chất kinh tế của Tư bản tài chính trong chủ nghĩa tư bản giai đoạn độc quyền."
+  },
+  {
+    id: 14,
+    question: "Câu 14. Tư bản tài chính có nguồn gốc từ đâu?",
+    options: [
+      "A. Quá trình độc quyền hoá trong thương nghiệp và ngân hàng",
+      "B. Quá trình độc quyền hoá trong công nghiệp và ngân hàng",
+      "C. Quá trình độc quyền hoá trong thương nghiệp và công nghiệp",
+      "D. Quá trình độc quyền hoá trong công – nông – thương"
+    ],
+    correctIndex: 1,
+    explanation: "Tư bản tài chính hình thành từ sự dung hợp, xâm nhập lẫn nhau giữa độc quyền công nghiệp và độc quyền ngân hàng."
+  },
+  {
+    id: 15,
+    question: "Câu 15. Trong chủ nghĩa tư bản ngày nay, các trùm tài chính thống trị nền kinh tế thông qua:",
+    options: [
+      'A. Kết hợp "chế độ tham dự" với "chế độ uỷ nhiệm"',
+      "B. Chế độ tham dự",
+      "C. Chế độ uỷ nhiệm"
+    ],
+    correctIndex: 0,
+    explanation: "Bọn đầu sỏ tài chính củng cố quyền lực bằng cách kết hợp Chế độ tham dự (mua cổ phần khống chế công ty mẹ, kiểm soát gián tiếp các công ty con) và Chế độ ủy nhiệm (nhận ủy thác quản lý tài chính)."
+  },
+  {
+    id: 16,
+    question: "Câu 16. Sự phát triển của tư bản tài chính dẫn đến sự hình thành của:",
+    options: [
+      "A. Các nhà tài phiệt",
+      "B. Các tập đoàn tài chính",
+      "C. Các doanh nghiệp tư nhân",
+      "D. Các công ty mẹ"
+    ],
+    correctIndex: 0,
+    explanation: "Tư bản tài chính tập trung tạo nên một tầng lớp thiểu số thống trị có quyền lực kinh tế và chính trị cực lớn, được gọi là các nhà tài phiệt (bọn đầu sỏ tài chính)."
+  },
+  {
+    id: 17,
+    question: "Câu 17. Sự phát triển của các tổ chức độc quyền trong ngân hàng đã làm thay đổi quan hệ giữa ngân hàng và các doanh nghiệp công nghiệp đó là:",
+    options: [
+      "A. Từ trung gian thanh toán trở thành khống chế mọi hoạt động kinh tế – xã hội",
+      "B. Từ trung gian thanh toán trở thành cổ đông của các doanh nghiệp nhà nước",
+      "C. Từ hoạt động cho vay trở thành hoạt động khống chế doanh nghiệp tư nhân",
+      "D. Từ hoạt động cho vay trở thành chi phối các doanh nghiệp"
+    ],
+    correctIndex: 0,
+    explanation: "Ngân hàng không còn là thủ quỹ thanh toán đơn thuần mà trở thành người giám sát, khống chế, nắm giữ vận mệnh kinh tế của các xí nghiệp công nghiệp."
+  },
+  {
+    id: 18,
+    question: "Câu 18. Xuất khẩu tư bản là gì?",
+    options: [
+      "A. Đặc điểm của chủ nghĩa tư bản tự do cạnh tranh",
+      "B. Mang tư bản đầu tư ở nước ngoài để sản xuất giá trị thặng dư tại nước sở tại",
+      "C. Mang hàng hóa ra nước ngoài để thực hiện giá trị của hàng hóa",
+      "D. Mang tư bản ra nước ngoài mua nguyên nhiên vật liệu sản xuất"
+    ],
+    correctIndex: 1,
+    explanation: "Xuất khẩu tư bản là đưa vốn (tiền mặt, máy móc...) ra nước ngoài để đầu tư sản xuất trực tiếp hoặc cho vay, nhằm khai thác nhân công, tài nguyên giá rẻ để tạo ra giá trị thặng dư ngay tại nước nhập khẩu vốn."
+  },
+  {
+    id: 19,
+    question: "Câu 19. Xuất khẩu tư bản được coi là đặc điểm của:",
+    options: [
+      "A. Phương thức sản xuất phong kiến",
+      "B. Phương thức sản xuất tư bản chủ nghĩa",
+      "C. Chủ nghĩa tư bản giai đoạn tự do cạnh tranh",
+      "D. Chủ nghĩa tư bản giai đoạn độc quyền"
+    ],
+    correctIndex: 3,
+    explanation: "Xuất khẩu hàng hóa là đặc điểm của giai đoạn tự do cạnh tranh, còn xuất khẩu tư bản là đặc trưng kinh tế nổi bật của giai đoạn tư bản độc quyền."
+  },
+  {
+    id: 20,
+    question: "Câu 20. Trên giác độ kinh tế chính trị, mục tiêu cuối cùng của xuất khẩu tư bản là:",
+    options: [
+      "A. Chiếm đoạt giá trị thặng dư và các nguồn lợi khác ở nước nhập khẩu tư bản",
+      "B. Thực hiện giá trị và chiếm các nguồn lợi khác của nước nhập khẩu tư bản",
+      "C. Giúp đỡ các nước nhập khẩu tư bản phát triển"
+    ],
+    correctIndex: 0,
+    explanation: "Mục đích kinh tế tối cao của xuất khẩu tư bản là thu hồi siêu lợi nhuận độc quyền từ việc bóc lột sức lao động và vơ vét tài nguyên nước sở tại."
+  },
+  {
+    id: 21,
+    question: "Câu 21. Trong xuất khẩu tư bản, có hai hình thức đầu tư đó là:",
+    options: [
+      "A. Đầu tư trực tiếp và đầu tư gián tiếp",
+      "B. Đầu tư trực tiếp và đầu tư uỷ nhiệm",
+      "C. Đầu tư trực tiếp và đầu tư nhà nước",
+      "D. Đầu tư tư bản tư nhân và đầu tư tư bản nhà nước"
+    ],
+    correctIndex: 0,
+    explanation: "Hai hình thức cơ bản của xuất khẩu tư bản phân theo phương thức quản trị vốn là: Đầu tư trực tiếp (FDI) và Đầu tư gián tiếp (mua cổ phiếu, cho vay lãi)."
+  },
+  {
+    id: 22,
+    question: "Câu 22. Mua cổ phiếu, trái phiếu là hình thức đầu tư gì?",
+    options: [
+      "A. Đầu tư gián tiếp",
+      "B. Đầu tư trực tiếp",
+      "C. Đầu tư thị trường",
+      "D. Đầu tư tiền tệ"
+    ],
+    correctIndex: 0,
+    explanation: "Mua chứng khoán nước ngoài để lấy cổ tức hoặc lãi mà không trực tiếp đứng ra xây dựng, điều hành dự án sản xuất là đầu tư gián tiếp."
+  },
+  {
+    id: 23,
+    question: "Câu 23. Biểu hiện mới của xuất khẩu tư bản ngày nay đó là:",
+    options: [
+      "A. Dòng đầu tư chảy qua lại giữa các nước tư bản phát triển với nhau",
+      "B. Vai trò của các công ty xuyên quốc gia trong xuất khẩu tư bản — đặc biệt đầu tư trực tiếp nước ngoài (FDI) càng lớn",
+      "C. Hình thức xuất khẩu đa dạng",
+      "D. Dựa trên nguyên tắc cùng có lợi",
+      "E. Tất cả phương án trên"
+    ],
+    correctIndex: 4,
+    explanation: "Trong giai đoạn hiện nay, xuất khẩu tư bản xuất hiện nhiều biểu hiện mới phong phú, bao gồm sự gia tăng của FDI từ các công ty đa quốc gia (TNCs), sự đầu tư chéo giữa các nước phát triển, và sự đa dạng hóa hình thức trên cơ sở đôi bên cùng có lợi."
+  },
+  {
+    id: 24,
+    question: "Câu 24. Các tổ chức độc quyền của các quốc gia cạnh tranh với nhau trên thị trường quốc tế sẽ dẫn đến:",
+    options: [
+      "A. Sự thôn tính nhau",
+      "B. Sẽ có các tổ chức độc quyền bị phá sản, còn những tổ chức độc quyền mạnh tồn tại",
+      "C. Đấu tranh không khoan nhượng",
+      "D. Thỏa hiệp với nhau để hình thành các tổ chức độc quyền quốc tế"
+    ],
+    correctIndex: 3,
+    explanation: "Khi cuộc cạnh tranh quốc tế quá khốc liệt, các tập đoàn xuyên quốc gia có xu hướng ký thỏa ước để phân chia thị trường thế giới nhằm độc chiếm các vùng kinh tế, tạo ra liên minh độc quyền quốc tế."
+  },
+  {
+    id: 25,
+    question: "Câu 25. Kết quả cạnh tranh giữa các tổ chức độc quyền trong cùng một ngành:",
+    options: [
+      "A. Một sự thỏa hiệp được hình thành",
+      "B. Một bên phá sản",
+      "C. Một sự thỏa hiệp được hình thành hoặc một bên phá sản",
+      "D. Cả hai cùng lớn mạnh"
+    ],
+    correctIndex: 2,
+    explanation: "Cạnh tranh khốc liệt giữa các ông lớn công nghiệp cùng ngành trên thế giới tất yếu dẫn đến thỏa hiệp chia chác thị trường, hoặc một bên kiệt quệ và bị nuốt chửng."
+  },
+  {
+    id: 26,
+    question: "Câu 26. Sau những năm 50 của thế kỷ XX, chủ nghĩa tư bản chuyển sang chính sách thực dân mới đó là:",
+    options: [
+      "A. Viện trợ kinh tế",
+      "B. Viện trợ quân sự",
+      "C. Viện trợ thuốc men",
+      "D. Viện trợ chính trị"
+    ],
+    isMultipleChoice: true,
+    correctIndices: [0, 1],
+    explanation: "Thời kỳ thực dân mới, các cường quốc áp đặt sự chi phối bằng cách kết hợp giữa viện trợ kinh tế đi kèm điều kiện ràng buộc tài chính và viện trợ quân sự để kiểm soát an ninh quốc phòng."
+  },
+  {
+    id: 27,
+    question: "Câu 27. Chính sách thực dân trong thời đại chủ nghĩa đế quốc tư bản đã tạo ra những hình thức lệ thuộc mới có tính quá độ của các nước đó là:",
+    options: [
+      "A. Độc lập về chính trị nhưng lệ thuộc về kinh tế và ngoại giao",
+      "B. Độc lập về kinh tế nhưng lệ thuộc về chính trị",
+      "C. Lệ thuộc về kinh tế, chính trị và ngoại giao",
+      "D. Độc lập về lãnh thổ, nhưng lệ thuộc về ngoại giao"
+    ],
+    correctIndex: 0,
+    explanation: "Chủ nghĩa thực dân mới cho phép nước nhỏ độc lập về mặt chính quyền hành chính chính trị bên ngoài, nhưng khống chế toàn diện về mạch máu kinh tế và đường lối ngoại giao."
+  },
+  {
+    id: 28,
+    question: "Câu 28. Tổng kết thực tiễn vai trò của độc quyền trong nền kinh tế các nước tư bản phát triển giai đoạn cuối thế kỷ XIX đầu thế kỷ XX, V.I. Lênin đã khái quát độc quyền tư bản chủ nghĩa thành:",
+    options: [
+      "A. Bốn đặc điểm",
+      "B. Năm đặc điểm",
+      "C. Sáu đặc điểm",
+      "D. Bảy đặc điểm"
+    ],
+    correctIndex: 1,
+    explanation: "Lênin đã tóm tắt và phân tích sâu sắc hệ thống độc quyền qua 5 đặc điểm kinh tế cơ bản nhất của chủ nghĩa đế quốc."
+  },
+  {
+    id: 29,
+    question: "Câu 29. Những đặc điểm kinh tế cơ bản nhất của chủ nghĩa tư bản độc quyền bao gồm:",
+    options: [
+      "A. Tập trung sản xuất cùng với các tổ chức độc quyền; tư bản tài chính; xuất khẩu tư bản; sự phân chia thế giới về lãnh thổ giữa các nước đế quốc",
+      "B. Tập trung sản xuất cùng với các tổ chức độc quyền, tư bản tài chính; sự phân chia thị trường thế giới giữa các tổ chức độc quyền, sự phân chia thế giới về lãnh thổ giữa các nước đế quốc",
+      "C. Tập trung sản xuất cùng với các tổ chức độc quyền; xuất khẩu tư bản; sự phân chia thị trường thế giới giữa các tổ chức độc quyền; sự phân chia thế giới về lãnh thổ giữa các nước đế quốc",
+      "D. Tập trung sản xuất cùng với các tổ chức độc quyền; tư bản tài chính; xuất khẩu tư bản; sự phân chia thị trường thế giới giữa các tổ chức độc quyền; sự phân chia thế giới về lãnh thổ giữa các nước đế quốc"
+    ],
+    correctIndex: 3,
+    explanation: "Đây là tập hợp đầy đủ 5 đặc trưng kinh tế cơ bản của chủ nghĩa tư bản giai đoạn độc quyền."
+  },
+  {
+    id: 30,
+    question: "Câu 30. V.I. Lênin đã phân tích chủ nghĩa tư bản độc quyền bằng các đặc điểm kinh tế cơ bản nào sau đây:",
+    options: [
+      "A. Tập trung sản xuất và các tổ chức độc quyền; tư bản tài chính và bọn đầu sỏ tài chính",
+      "B. Tập trung sản xuất và các tổ chức độc quyền; tư bản tài chính và bọn đầu sỏ tài chính; xuất khẩu tư bản",
+      "C. Tập trung sản xuất và các tổ chức độc quyền, tư bản tài chính và bọn đầu sỏ tài chính; xuất khẩu tư bản; phân chia thế giới về kinh tế",
+      "D. Tập trung sản xuất và các tổ chức độc quyền, tư bản tài chính và bọn đầu sỏ tài chính; xuất khẩu tư bản; phân chia thế giới về kinh tế giữa các tổ chức độc quyền; sự phân chia thế giới về lãnh thổ giữa các cường quốc đế quốc"
+    ],
+    correctIndex: 3,
+    explanation: "Độc quyền gồm 5 đặc điểm cơ bản: (1) Tích tụ sản xuất & độc quyền, (2) Tư bản tài chính & tài phiệt, (3) Xuất khẩu tư bản, (4) Phân chia thế giới về kinh tế, (5) Phân chia thế giới về lãnh thổ."
   }
 ];
+
+// Helper to shuffle questions and pick 10 random ones
+function getRandomQuizQuestions() {
+  const shuffled = [...QUIZ_QUESTIONS].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, 10);
+}
 
 // Render dynamic quiz content (one question at a time)
 function renderQuiz() {
@@ -985,26 +1319,26 @@ function renderQuiz() {
 
   const qIdx = gameState.currentQuizIndex;
   
-  // If we've completed all questions (index >= 3), show final overview
-  if (qIdx >= QUIZ_QUESTIONS.length) {
+  // If we've completed all questions (index >= activeQuizQuestions.length), show final overview
+  if (gameState.activeQuizQuestions && qIdx >= gameState.activeQuizQuestions.length) {
     showQuizResultsSummary();
     return;
   }
 
-  const q = QUIZ_QUESTIONS[qIdx];
+  const q = gameState.activeQuizQuestions[qIdx];
 
   const card = document.createElement('div');
   card.className = 'quiz-question-card';
   card.style.animation = 'fadeIn 0.4s ease-out';
 
-  // Question indicator (e.g. Câu hỏi 1/3)
+  // Question indicator (e.g. Câu hỏi 1/10)
   const qIndicator = document.createElement('div');
   qIndicator.style.fontSize = '0.8rem';
   qIndicator.style.color = 'var(--color-border-gold)';
   qIndicator.style.textTransform = 'uppercase';
   qIndicator.style.fontWeight = '700';
   qIndicator.style.marginBottom = '5px';
-  qIndicator.innerText = `Câu hỏi ${qIdx + 1} / ${QUIZ_QUESTIONS.length}`;
+  qIndicator.innerText = `Câu hỏi ${qIdx + 1} / ${gameState.activeQuizQuestions.length}`;
   card.appendChild(qIndicator);
 
   const qTitle = document.createElement('div');
@@ -1013,6 +1347,9 @@ function renderQuiz() {
   qTitle.style.color = '#ebdcb2';
   qTitle.style.marginBottom = '12px';
   qTitle.innerText = q.question.replace(/^Câu \d+\.\s*/, ''); // strip prefix if duplicate
+  if (q.isMultipleChoice) {
+    qTitle.innerText += ' (Chọn nhiều đáp án)';
+  }
   card.appendChild(qTitle);
 
   const optionsList = document.createElement('div');
@@ -1023,41 +1360,76 @@ function renderQuiz() {
     label.className = 'quiz-option-label';
     label.id = `q-label-${q.id}-${optIdx}`;
 
-    const radio = document.createElement('input');
-    radio.type = 'radio';
-    radio.name = `quiz-q-${q.id}`;
-    radio.value = optIdx;
+    const input = document.createElement('input');
+    input.type = q.isMultipleChoice ? 'checkbox' : 'radio';
+    input.name = `quiz-q-${q.id}`;
+    input.value = optIdx;
     
     // If already submitted this round, disable input and style
     if (gameState.quizSubmitted) {
-      radio.disabled = true;
-      if (optIdx === q.correctIndex) {
+      input.disabled = true;
+      
+      const userSelectedAnswers = gameState.quizAnswers[qIdx] || [];
+      const userHasSelected = q.isMultipleChoice 
+        ? userSelectedAnswers.includes(optIdx) 
+        : (gameState.quizAnswers[qIdx] === optIdx);
+        
+      const isCorrectOption = q.isMultipleChoice 
+        ? q.correctIndices.includes(optIdx) 
+        : (optIdx === q.correctIndex);
+
+      if (isCorrectOption) {
         label.className = 'quiz-option-label correct';
-        radio.checked = (gameState.quizAnswers[qIdx] === optIdx);
-      } else if (optIdx === gameState.quizAnswers[qIdx]) {
+        input.checked = userHasSelected || isCorrectOption;
+      } else if (userHasSelected) {
         label.className = 'quiz-option-label incorrect';
-        radio.checked = true;
+        input.checked = true;
       }
     } else {
       // Restore previous selection if any
-      if (gameState.quizAnswers[qIdx] === optIdx) {
-        label.classList.add('selected');
-        radio.checked = true;
+      const prevAnswers = gameState.quizAnswers[qIdx];
+      if (q.isMultipleChoice) {
+        if (Array.isArray(prevAnswers) && prevAnswers.includes(optIdx)) {
+          label.classList.add('selected');
+          input.checked = true;
+        }
+      } else {
+        if (prevAnswers === optIdx) {
+          label.classList.add('selected');
+          input.checked = true;
+        }
       }
       
-      radio.onchange = () => {
-        for (let i = 0; i < q.options.length; i++) {
-          document.getElementById(`q-label-${q.id}-${i}`).classList.remove('selected');
+      input.onchange = () => {
+        if (q.isMultipleChoice) {
+          if (input.checked) {
+            label.classList.add('selected');
+          } else {
+            label.classList.remove('selected');
+          }
+          // Gather all checked indices for multiple choice
+          const checked = [];
+          q.options.forEach((_, idx) => {
+            const optInput = optionsList.querySelector(`input[value="${idx}"]`);
+            if (optInput && optInput.checked) checked.push(idx);
+          });
+          gameState.quizAnswers[qIdx] = checked;
+        } else {
+          // Single choice: clear other options
+          for (let i = 0; i < q.options.length; i++) {
+            const optLabel = document.getElementById(`q-label-${q.id}-${i}`);
+            if (optLabel) optLabel.classList.remove('selected');
+          }
+          label.classList.add('selected');
+          gameState.quizAnswers[qIdx] = optIdx;
         }
-        label.classList.add('selected');
-        gameState.quizAnswers[qIdx] = optIdx;
       };
     }
 
     const span = document.createElement('span');
     span.innerText = optText;
 
-    label.appendChild(radio);
+    label.appendChild(input);
     label.appendChild(span);
     optionsList.appendChild(label);
   });
@@ -1081,7 +1453,7 @@ function renderQuiz() {
     checkBtn.innerText = '📝 Xác nhận câu trả lời';
     checkBtn.onclick = submitActiveAnswer;
   } else {
-    if (qIdx < QUIZ_QUESTIONS.length - 1) {
+    if (qIdx < gameState.activeQuizQuestions.length - 1) {
       checkBtn.innerText = 'Câu tiếp theo ➜';
       checkBtn.onclick = goToNextQuestion;
     } else {
@@ -1094,30 +1466,48 @@ function renderQuiz() {
 // Submit active quiz question answer
 function submitActiveAnswer() {
   const qIdx = gameState.currentQuizIndex;
-  const q = QUIZ_QUESTIONS[qIdx];
+  const q = gameState.activeQuizQuestions[qIdx];
 
-  const radios = document.getElementsByName(`quiz-q-${q.id}`);
-  let selectedIdx = -1;
-  for (let i = 0; i < radios.length; i++) {
-    if (radios[i].checked) {
-      selectedIdx = i;
-      break;
+  const inputs = document.getElementsByName(`quiz-q-${q.id}`);
+  let isCorrect = false;
+
+  if (q.isMultipleChoice) {
+    const selectedIndices = [];
+    for (let i = 0; i < inputs.length; i++) {
+      if (inputs[i].checked) {
+        selectedIndices.push(i);
+      }
     }
+    if (selectedIndices.length === 0) {
+      alert("Vui lòng chọn ít nhất một phương án trả lời trước khi xác nhận!");
+      return;
+    }
+    gameState.quizAnswers[qIdx] = selectedIndices;
+    
+    // Compare array elements
+    isCorrect = (selectedIndices.length === q.correctIndices.length &&
+                 selectedIndices.every(val => q.correctIndices.includes(val)));
+  } else {
+    let selectedIdx = -1;
+    for (let i = 0; i < inputs.length; i++) {
+      if (inputs[i].checked) {
+        selectedIdx = i;
+        break;
+      }
+    }
+    if (selectedIdx === -1) {
+      alert("Vui lòng chọn một phương án trả lời trước khi xác nhận!");
+      return;
+    }
+    gameState.quizAnswers[qIdx] = selectedIdx;
+    isCorrect = (selectedIdx === q.correctIndex);
   }
 
-  if (selectedIdx === -1) {
-    alert("Vui lòng chọn một phương án trả lời trước khi xác nhận!");
-    return;
-  }
-
-  // Save answer and set state
-  gameState.quizAnswers[qIdx] = selectedIdx;
   gameState.quizSubmitted = true;
 
   // Re-render to show feedback (green/red highlights and explanation)
   renderQuiz();
 
-  const isCorrect = (selectedIdx === q.correctIndex);
   if (isCorrect) {
     showToast("🎯 Câu trả lời chính xác!");
   } else {
@@ -1144,9 +1534,15 @@ function showQuizResultsSummary() {
   container.innerHTML = '';
 
   let score = 0;
-  QUIZ_QUESTIONS.forEach((q, idx) => {
-    if (gameState.quizAnswers[idx] === q.correctIndex) {
-      score++;
+  gameState.activeQuizQuestions.forEach((q, idx) => {
+    const ans = gameState.quizAnswers[idx];
+    if (q.isMultipleChoice) {
+      const isCorrect = Array.isArray(ans) && 
+                       ans.length === q.correctIndices.length &&
+                       ans.every(val => q.correctIndices.includes(val));
+      if (isCorrect) score++;
+    } else {
+      if (ans === q.correctIndex) score++;
     }
   });
 
@@ -1163,14 +1559,14 @@ function showQuizResultsSummary() {
   scoreTitle.style.fontWeight = '800';
   scoreTitle.style.color = 'var(--color-border-gold)';
   scoreTitle.style.marginBottom = '10px';
-  scoreTitle.innerText = `KẾT QUẢ TRẮC NGHIỆM: ĐÚNG ${score}/${QUIZ_QUESTIONS.length} CÂU`;
+  scoreTitle.innerText = `KẾT QUẢ TRẮC NGHIỆM: ĐÚNG ${score}/${gameState.activeQuizQuestions.length} CÂU`;
   summaryCard.appendChild(scoreTitle);
 
   const scorePercent = document.createElement('div');
   scorePercent.style.fontSize = '1rem';
   scorePercent.style.color = 'var(--color-text-muted)';
   scorePercent.style.marginBottom = '20px';
-  scorePercent.innerText = `Tỷ lệ hoàn thành đúng: ${Math.round((score / QUIZ_QUESTIONS.length) * 100)}%`;
+  scorePercent.innerText = `Tỷ lệ hoàn thành đúng: ${Math.round((score / gameState.activeQuizQuestions.length) * 100)}%`;
   summaryCard.appendChild(scorePercent);
 
   // Feedback text
@@ -1179,20 +1575,22 @@ function showQuizResultsSummary() {
   feedback.style.lineHeight = '1.6';
   feedback.style.marginBottom = '20px';
   
-  if (score === 3) {
-    feedback.innerText = "🏆 Tuyệt vời! Bạn đã trả lời đúng tất cả các câu hỏi trắc nghiệm cực khó. Điều này chứng tỏ bạn đã nắm vững sự chuyển dịch lý luận từ cạnh tranh tự do lên độc quyền và chủ nghĩa đế quốc.";
-  } else if (score === 2) {
-    feedback.innerText = "✨ Khá tốt! Bạn đã nắm được hầu hết các khái niệm trọng tâm. Hãy xem lại giải thích các câu trả lời sai để củng cố kỹ kiến thức nhé.";
+  if (score === gameState.activeQuizQuestions.length) {
+    feedback.innerText = "🏆 Tuyệt vời! Bạn đạt điểm số tối đa. Bạn đã nắm rất vững toàn bộ 5 đặc điểm kinh tế của độc quyền theo lý luận của V.I. Lênin!";
+  } else if (score >= 7) {
+    feedback.innerText = "✨ Rất tốt! Bạn đã vượt qua bài kiểm tra trắc nghiệm với điểm số cao. Hãy tiếp tục phát huy và xem kỹ lại các câu trả lời sai nhé.";
+  } else if (score >= 5) {
+    feedback.innerText = "📚 Khá ổn! Bạn đạt mức trung bình khá. Có một số khái niệm vẫn cần làm rõ hơn, hãy rê chuột vào các Node trong sơ đồ cây quyết định để ôn lại.";
   } else {
-    feedback.innerText = "📚 Bạn cần ôn tập thêm. Hãy rê chuột hoặc chạm vào các Node trong sơ đồ cây quyết định ở trên để đọc lại bài học lý thuyết.";
+    feedback.innerText = "⚠️ Điểm số dưới trung bình. Bạn cần ôn tập kỹ lại lý thuyết. Hãy nhấn nút xem lại chi tiết từng câu bên dưới hoặc rê chuột xem các bài học trên cây quyết định.";
   }
   summaryCard.appendChild(feedback);
 
-  // Review button to review questions one by one again
+  // Review button
   const reviewBtn = document.createElement('button');
   reviewBtn.className = 'btn';
   reviewBtn.style.padding = '8px 16px';
-  reviewBtn.innerText = '🔍 Xem lại chi tiết từng câu';
+  reviewBtn.innerText = '🔍 Xem lại chi tiết 10 câu hỏi';
   reviewBtn.onclick = () => {
     gameState.currentQuizIndex = 0;
     gameState.quizSubmitted = true;
@@ -1202,7 +1600,7 @@ function showQuizResultsSummary() {
 
   container.appendChild(summaryCard);
 
-  // Hide progress check button
+  // Hide check button
   const checkBtn = document.getElementById('btn-check-quiz');
   checkBtn.classList.add('hidden');
 
@@ -1216,7 +1614,7 @@ function showQuizResultsSummary() {
 function exportData() {
   let scoreText = "Chưa làm bài trắc nghiệm";
   if (gameState.quizScore !== undefined) {
-    scoreText = `Đúng ${gameState.quizScore}/3 câu`;
+    scoreText = `Đúng ${gameState.quizScore}/${gameState.activeQuizQuestions.length} câu`;
   }
 
   let report = `# BÁO CÁO HỌC TẬP: ĐẾ CHẾ ĐỘC QUYỀN\n`;
@@ -1224,7 +1622,7 @@ function exportData() {
   report += `Vị thế độc quyền cuối cùng: ${INTEGRATION_LABELS[gameState.integrationLevel]}\n`;
   report += `Quy mô liên kết: ${gameState.scope}\n`;
   report += `Vốn tích tụ cuối cùng: $${gameState.capital.toLocaleString()}k\n`;
-  report += `Kết quả trắc nghiệm ôn tập: ${scoreText}\n`;
+  report += `Kết quả trắc nghiệm ôn tập ngẫu nhiên (10 câu): ${scoreText}\n`;
   report += `=========================================\n\n`;
   
   report += `## LỊCH SỬ QUYẾT ĐỊNH (ROUND-BY-ROUND):\n`;
@@ -1236,13 +1634,30 @@ function exportData() {
     report += `-----------------------------------------\n`;
   });
 
-  if (gameState.quizAnswers) {
-    report += `\n## ĐÁNH GIÁ TRẮC NGHIỆM CHI TIẾT:\n`;
-    QUIZ_QUESTIONS.forEach((q, idx) => {
-      const userAnsIdx = gameState.quizAnswers[idx];
-      const userAnsText = (userAnsIdx !== undefined && userAnsIdx !== -1) ? q.options[userAnsIdx] : "Chưa chọn";
-      const correctText = q.options[q.correctIndex];
-      const status = userAnsIdx === q.correctIndex ? "ĐÚNG" : "SAI";
+  if (gameState.quizAnswers && gameState.activeQuizQuestions) {
+    report += `\n## ĐÁNH GIÁ TRẮC NGHIỆM CHI TIẾT (10 CÂU ĐÃ LÀM):\n`;
+    gameState.activeQuizQuestions.forEach((q, idx) => {
+      const ans = gameState.quizAnswers[idx];
+      let userAnsText = "";
+      let isCorrect = false;
+
+      if (q.isMultipleChoice) {
+        const indices = Array.isArray(ans) ? ans : [];
+        userAnsText = indices.length > 0 
+          ? indices.map(i => q.options[i]).join(" & ") 
+          : "Chưa chọn";
+        isCorrect = (indices.length === q.correctIndices.length &&
+                     indices.every(val => q.correctIndices.includes(val)));
+      } else {
+        userAnsText = (ans !== undefined && ans !== -1) ? q.options[ans] : "Chưa chọn";
+        isCorrect = (ans === q.correctIndex);
+      }
+
+      const correctText = q.isMultipleChoice 
+        ? q.correctIndices.map(i => q.options[i]).join(" & ") 
+        : q.options[q.correctIndex];
+        
+      const status = isCorrect ? "ĐÚNG" : "SAI";
       
       report += `${q.question}\n`;
       report += `- Câu trả lời của bạn: "${userAnsText}" -> [${status}]\n`;
@@ -1277,5 +1692,6 @@ function replayGame() {
     gameState.quizSubmitted = false;
     gameState.quizAnswers = [];
     delete gameState.quizScore;
+    delete gameState.activeQuizQuestions;
   }
 }
